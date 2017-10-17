@@ -1,4 +1,8 @@
 {
   "parser": "babel-eslint",
-  "extends": "airbnb"
+  "extends": "airbnb",
+  "rules": {
+    "no-console": 0,
+    "prefer-destructuring": 0
+  }
 }

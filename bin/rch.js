@@ -20,7 +20,7 @@ if (!program.args[0]) {
   program.help();
 }
 
-const hideContainers = program.hideContainers;
+const { hideContainers } = program;
 
 let workCounter = 0;
 const filename = path.resolve(program.args[0]);
@@ -42,10 +42,11 @@ function extractModules(bodyItem) {
 }
 
 function extractChildComponents(tokens, imports) {
-  let childComponents = [];
-  for (var i = 0; i < tokens.length - 1; i++) {
+  const childComponents = [];
+  let i = 0;
+  for (i = 0; i < tokens.length - 1; i++) {
     if (tokens[i].type.label === 'jsxTagStart' && tokens[i + 1].type.label === 'jsxName') {
-      let childComponent = _.find(imports, { name: tokens[i + 1].value });
+      const childComponent = _.find(imports, { name: tokens[i + 1].value });
       if (childComponent) {
         childComponents.push(childComponent);
       }
@@ -65,7 +66,7 @@ function formatChild(child, parent, depth) {
 
 function extractExport(body) {
   let result;
-  body.some(b => {
+  body.some((b) => {
     if (b.type === 'ExportDefaultDeclaration') {
       result = b.declaration.name;
     }
@@ -83,7 +84,7 @@ function findImportInArguments(func, imports, importNames) {
 function findImportInExportDeclaration(body, exportIdentifier, imports) {
   let result;
   const importNames = imports.map(i => i.name);
-  body.some(b => {
+  body.some((b) => {
     if (b.type === 'VariableDeclaration'
       && b.declarations[0].id.name === exportIdentifier
       && b.declarations[0].init.type === 'CallExpression') {
@@ -113,7 +114,7 @@ function findImportInExportDeclaration(body, exportIdentifier, imports) {
 function findContainerChild(node, body, imports, depth) {
   const exportIdentifier = extractExport(body);
   const usedImport = findImportInExportDeclaration(body, exportIdentifier, imports);
-  return usedImport && [formatChild(usedImport, node, depth)] || [];
+  return (usedImport && [formatChild(usedImport, node, depth)]) || [];
 }
 
 function processFile(node, file, depth) {
@@ -139,14 +140,11 @@ function formatNodeToPrettyTree(node) {
     node.children[0].name += ' (*)';
     return formatNodeToPrettyTree(node.children[0]);
   }
-  const newNode = node.children.length > 0 ?
-  {
+  const newNode = node.children.length > 0 ? {
     label: node.name,
     nodes: node.children.map(formatNodeToPrettyTree),
     depth: node.depth,
-  }
-  :
-  {
+  } : {
     label: node.name,
     depth: node.depth,
   };
@@ -167,7 +165,7 @@ function processNode(node, depth) {
     node.filename = `${node.filename}.js`;
   }
   readFile(node.filename, 'utf8')
-    .then(file => {
+    .then((file) => {
       processFile(node, file, depth);
       node.children.forEach(c => processNode(c, depth + 1));
       if (--workCounter <= 0) {
