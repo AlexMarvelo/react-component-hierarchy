@@ -33,8 +33,12 @@ const rootNode = {
 
 function extractModules(bodyItem) {
   if (bodyItem.type === 'ImportDeclaration') {
+    let name = bodyItem.source.value;
+    if (bodyItem.specifiers[0] && bodyItem.specifiers[0].local) {
+      name = bodyItem.specifiers[0].local.name;
+    }
     return {
-      name: bodyItem.specifiers[0].local.name,
+      name,
       source: bodyItem.source.value,
     };
   }
