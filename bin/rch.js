@@ -176,7 +176,8 @@ function processNode(node, depth) {
         done();
       }
     })
-    .catch(() => {
+    .catch((error) => {
+      console.error(error);
       --workCounter;
       if (path.extname(node.filename) === '.js') {
         // Look for .jsx next
