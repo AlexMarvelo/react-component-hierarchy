@@ -124,11 +124,16 @@ function findContainerChild(node, body, imports, depth) {
 function processFile(node, file, depth) {
   const ast = babylon.parse(file, {
     sourceType: 'module',
-    plugins: ['jsx', 'classProperties'],
+    plugins: [
+      'jsx',
+      'classProperties',
+      'objectRestSpread'],
   });
 
   // Get a list of imports and try to figure out which are child components
-  const imports = ast.program.body.map(extractModules).filter(i => !!i);
+  const imports = ast.program.body
+    .map(extractModules)
+    .filter(i => !!i);
   if (_.find(imports, { name: 'React' })) {
     // Look for children in the JSX
     const childComponents = _.uniq(extractChildComponents(ast.tokens, imports));
